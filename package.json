@@ -2,6 +2,8 @@
   "name": "@studiokloek/capacitor-plugin-audiosession",
   "version": "1.0.0",
   "description": "This capacitor plugin allows iOS applications to get notified audio about intterupts & route changes (for example when a headset is connected), and also query and override the audio device in use.",
+  "author": "Martijn Swart <opensource@studiokloek.nl>",
+  "license": "MIT",
   "main": "dist/plugin.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -14,8 +16,10 @@
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build"
   },
-  "author": "Martijn Swart",
-  "license": "MIT",
+  "np": {
+    "yarn": false,
+    "tests": false
+  },
   "devDependencies": {
     "@capacitor/android": "^2.5.0",
     "@capacitor/core": "^2.5.0",
