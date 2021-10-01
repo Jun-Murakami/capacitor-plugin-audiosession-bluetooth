@@ -1,0 +1,61 @@
+{
+  "name": "@studiokloek/capacitor-plugin-audiosession",
+  "version": "1.0.0",
+  "description": "This capacitor plugin allows iOS applications to get notified audio about intterupts & route changes (for example when a headset is connected), and also query and override the audio device in use.",
+  "main": "dist/plugin.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "scripts": {
+    "lint": "npm run prettier -- --check && npm run swiftlint -- lint",
+    "prettier": "prettier \"**/*.{css,html,ts,js,java}\"",
+    "swiftlint": "node-swiftlint",
+    "build": "npm run clean && tsc && rollup -c rollup.config.js",
+    "clean": "rimraf ./dist",
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "author": "Martijn Swart",
+  "license": "MIT",
+  "devDependencies": {
+    "@capacitor/android": "^2.4.7",
+    "@capacitor/core": "^2.4.7",
+    "@capacitor/ios": "^2.4.7",
+    "@ionic/prettier-config": "^1.0.1",
+    "@ionic/swiftlint-config": "^1.1.2",
+    "@rollup/plugin-node-resolve": "^8.4.0",
+    "prettier": "^2.2.1",
+    "prettier-plugin-java": "^0.8.3",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.45.2",
+    "swiftlint": "^1.0.1",
+    "typescript": "~3.9.9"
+  },
+  "peerDependencies": {
+    "@capacitor/core": "^2.4.7"
+  },
+  "files": [
+    "dist/",
+    "ios/",
+    "android/",
+    "CapacitorPluginAudiosession.podspec"
+  ],
+  "keywords": [
+    "capacitor",
+    "plugin",
+    "native"
+  ],
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    }
+  },
+  "prettier": "@ionic/prettier-config",
+  "swiftlint": "@ionic/swiftlint-config",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/studiokloek/capacitor-plugin-audiosession"
+  },
+  "bugs": {
+    "url": "https://github.com/studiokloek/capacitor-plugin-audiosession/issues"
+  }
+}
