@@ -39,6 +39,9 @@
     "android/",
     "StudiokloekCapacitorPluginAudiosession.podspec"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "capacitor",
     "plugin",
