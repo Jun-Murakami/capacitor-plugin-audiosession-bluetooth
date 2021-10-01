@@ -16,10 +16,6 @@
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build"
   },
-  "np": {
-    "yarn": false,
-    "tests": false
-  },
   "devDependencies": {
     "@capacitor/android": "^2.5.0",
     "@capacitor/core": "^2.5.0",
@@ -41,7 +37,7 @@
     "dist/",
     "ios/",
     "android/",
-    "CapacitorPluginAudiosession.podspec"
+    "StudiokloekCapacitorPluginAudiosession.podspec"
   ],
   "keywords": [
     "capacitor",
