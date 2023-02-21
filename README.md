@@ -1,97 +1,161 @@
-# capacitor-plugin-audiosession
+# @studiokloek/capacitor-plugin-audiosession
 
 **This plugin works on iOS only.**
 
-This plugin is a port of <https://github.com/saghul/cordova-plugin-audioroute> and allows iOS applications to get notified about audio session intteruptions and route changes (for example when a headset is connected). To query and override the audio device in use is also supported.
+This plugin is a port of <https://github.com/saghul/cordova-plugin-audioroute> and allows iOS applications to get notified about audio session interruptions and route changes (for example when a headset is connected). To query and override the audio device in use is also supported.
 
-## Installation
+## Install
 
-    npm install @studiokloek/capacitor-plugin-audiosession
+```bash
+npm install @studiokloek/capacitor-plugin-audiosession
+npx cap sync
+```
 
-For now this plugin works only in Capacitor 2.0+.
+For now this plugin works only in Capacitor 4.0+.
 
-## Methods
+## API
 
-### `currentOutputs()`
+<docgen-index>
 
-Get an Array of the currently connected audio ports. The possible elements are:
+* [`currentOutputs()`](#currentoutputs)
+* [`overrideOutput(...)`](#overrideoutput)
+* [`addListener('routeChanged', ...)`](#addlistenerroutechanged)
+* [`addListener('interruption', ...)`](#addlistenerinterruption)
+* [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
+* [Enums](#enums)
 
-* line-out
-* headphones
-* bluetooth-a2dp
-* builtin-receiver
-* builtin-speaker
-* hdmi
-* airplay
-* bluetooth-le
-* unknown
+</docgen-index>
 
-Example:
+<docgen-api>
+<!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-```` javascript
-import { Plugins } from '@capacitor/core';
-const { AudioSession } = Plugins,
+### currentOutputs()
 
-// list all current outputs
-const { outputs }  = await AudioSession.currentOutputs(),
-console.log(outputs)
-````
+```typescript
+currentOutputs() => Promise<AudioSessionPorts[]>
+```
 
-### `overrideOutput({type:string})`
+**Returns:** <code>Promise&lt;AudioSessionPorts[]&gt;</code>
 
-Overrides the audio output device. The output `type` must be one of `default` or `speaker`.
+--------------------
 
-Example:
 
-```` javascript
-import { Plugins } from '@capacitor/core';
-const { AudioSession } = Plugins,
+### overrideOutput(...)
 
-// force output on speker
-const success = await AudioSession.overrideOutput({ type: 'speaker' });
-console.log(success)
-````
+```typescript
+overrideOutput(type: OutputOverrideType) => Promise<boolean>
+```
 
-## Events
+| Param      | Type                                                              |
+| ---------- | ----------------------------------------------------------------- |
+| **`type`** | <code><a href="#outputoverridetype">OutputOverrideType</a></code> |
 
-### `interruption`
+**Returns:** <code>Promise&lt;boolean&gt;</code>
 
-When the audio playback was interrupted (or resumed) this event will be fired. The event contains the `type` which can be `began` or `ended`.
+--------------------
 
-Example:
 
-```` javascript
-import { Plugins } from '@capacitor/core';
-const { AudioSession } = Plugins,
+### addListener('routeChanged', ...)
 
-AudioSession.addListener('interruption', (event) => {
-    console.log('Audio interruption updated: ' + event.type);
-});
-````
+```typescript
+addListener(eventName: 'routeChanged', listenerFunc: RouteChangeListener) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
 
-### `routeChanged`
+| Param              | Type                                                                |
+| ------------------ | ------------------------------------------------------------------- |
+| **`eventName`**    | <code>'routeChanged'</code>                                         |
+| **`listenerFunc`** | <code><a href="#routechangelistener">RouteChangeListener</a></code> |
 
-When the audio route has changed a 'audioroute-changed' event will be fired. The event contains the `reason` which can be one of:
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
-* unknown
-* new-device-available
-* old-device-unavailable
-* category-change
-* override
-* wake-from-sleep
-* no-suitable-route-for-category
-* route-config-change
+--------------------
 
-Example:
 
-```` javascript
-import { Plugins } from '@capacitor/core';
-const { AudioSession } = Plugins,
+### addListener('interruption', ...)
 
-AudioSession.addListener('routeChanged', (event) => {
-    console.log('Audio route changed: ' + event.reason);
-});
-````
+```typescript
+addListener(eventName: 'interruption', listenerFunc: InterruptionListener) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                                                  |
+| ------------------ | --------------------------------------------------------------------- |
+| **`eventName`**    | <code>'interruption'</code>                                           |
+| **`listenerFunc`** | <code><a href="#interruptionlistener">InterruptionListener</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
+
+--------------------
+
+
+### Interfaces
+
+
+#### PluginListenerHandle
+
+| Prop         | Type                                      |
+| ------------ | ----------------------------------------- |
+| **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
+
+
+### Type Aliases
+
+
+#### OutputOverrideType
+
+<code>'default' | 'speaker'</code>
+
+
+#### RouteChangeListener
+
+<code>(reason: <a href="#routechangereasons">RouteChangeReasons</a>): void</code>
+
+
+#### InterruptionListener
+
+<code>(type: <a href="#interruptiontypes">InterruptionTypes</a>): void</code>
+
+
+### Enums
+
+
+#### AudioSessionPorts
+
+| Members                 | Value                           |
+| ----------------------- | ------------------------------- |
+| **`AIR_PLAY`**          | <code>'airplay'</code>          |
+| **`BLUETOOTH_LE`**      | <code>'bluetooth-le'</code>     |
+| **`BLUETOOTH_HFP`**     | <code>'bluetooth-hfp'</code>    |
+| **`BLUETOOTH_A2DP`**    | <code>'bluetooth-a2dp'</code>   |
+| **`BUILT_IN_SPEAKER`**  | <code>'builtin-speaker'</code>  |
+| **`BUILT_IN_RECEIVER`** | <code>'builtin-receiver'</code> |
+| **`HDMI`**              | <code>'hdmi'</code>             |
+| **`HEADPHONES`**        | <code>'headphones'</code>       |
+| **`LINE_OUT`**          | <code>'line-out'</code>         |
+
+
+#### RouteChangeReasons
+
+| Members                              | Value                                         |
+| ------------------------------------ | --------------------------------------------- |
+| **`NEW_DEVICE_AVAILABLE`**           | <code>'new-device-available'</code>           |
+| **`OLD_DEVICE_UNAVAILABLE`**         | <code>'old-device-unavailable'</code>         |
+| **`CATEGORY_CHANGE`**                | <code>'category-change'</code>                |
+| **`OVERRIDE`**                       | <code>'override'</code>                       |
+| **`WAKE_FROM_SLEEP`**                | <code>'wake-from-sleep'</code>                |
+| **`NO_SUITABLE_ROUTE_FOR_CATEGORY`** | <code>'no-suitable-route-for-category'</code> |
+| **`ROUTE_CONFIGURATION_CHANGE`**     | <code>'route-config-change'</code>            |
+| **`UNKNOWN`**                        | <code>'unknown'</code>                        |
+
+
+#### InterruptionTypes
+
+| Members     | Value                |
+| ----------- | -------------------- |
+| **`BEGAN`** | <code>'began'</code> |
+| **`ENDED`** | <code>'ended'</code> |
+
+</docgen-api>
 
 ## License
 
