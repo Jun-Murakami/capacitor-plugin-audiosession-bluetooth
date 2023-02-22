@@ -69,6 +69,6 @@
   },
   "np": {
     "yarn": false,
-    "test": false
+    "tests": false
   }
 }
