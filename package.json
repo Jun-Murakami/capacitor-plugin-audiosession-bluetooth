@@ -66,5 +66,9 @@
     "ios": {
       "src": "ios"
     }
+  },
+  "np": {
+    "yarn": false,
+    "test": false
   }
 }
