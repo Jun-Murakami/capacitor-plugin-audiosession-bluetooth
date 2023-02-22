@@ -4,7 +4,7 @@ import AVKit
 
 var AudioSessionOverrideTypes: [AVAudioSession.PortOverride: String] = [
     .none: "none",
-    .speaker: "speaker",
+    .speaker: "speaker"
 ]
 
 var AudioSessionRouteChangeReasons: [AVAudioSession.RouteChangeReason: String] = [
@@ -15,12 +15,12 @@ var AudioSessionRouteChangeReasons: [AVAudioSession.RouteChangeReason: String] =
     .wakeFromSleep: "wake-from-sleep",
     .noSuitableRouteForCategory: "no-suitable-route-for-category",
     .routeConfigurationChange: "route-config-change",
-    .unknown: "unknown",
+    .unknown: "unknown"
 ]
 
 var AudioSessionInterruptionTypes: [AVAudioSession.InterruptionType: String] = [
     .began: "began",
-    .ended: "ended",
+    .ended: "ended"
 ]
 
 var AudioSessionPorts: [AVAudioSession.Port: String] = [
@@ -32,7 +32,7 @@ var AudioSessionPorts: [AVAudioSession.Port: String] = [
     .builtInReceiver: "builtin-receiver",
     .HDMI: "hdmi",
     .headphones: "headphones",
-    .lineOut: "line-out",
+    .lineOut: "line-out"
 ]
 
 public typealias AudioSessionRouteChangeObserver = (String) -> Void
@@ -40,11 +40,11 @@ public typealias AudioSessionInterruptionObserver = (String) -> Void
 public typealias AudioSessionOverrideCallback = (Bool, String) -> Void
 
 public class AudioSession: NSObject {
-    
+
     var routeChangeObserver: AudioSessionRouteChangeObserver?
     var interruptionObserver: AudioSessionInterruptionObserver?
 
-     public func load() -> Void {
+    public func load() {
         let nc = NotificationCenter.default
 
         nc.addObserver(self,
@@ -57,72 +57,69 @@ public class AudioSession: NSObject {
                        name: AVAudioSession.interruptionNotification,
                        object: AVAudioSession.sharedInstance)
     }
-    
+
     // EVENTS
-    
+
     @objc func handleRouteChange(notification: Notification) {
-          guard let userInfo = notification.userInfo,
+        guard let userInfo = notification.userInfo,
               let reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey] as? UInt,
               let reasonType = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else { return }
-              let readableReason = AudioSessionRouteChangeReasons[reasonType] ?? "unknown"
+        let readableReason = AudioSessionRouteChangeReasons[reasonType] ?? "unknown"
 
-          CAPLog.print("AudioSession.handleRouteChange() changed to \(readableReason)")
+        CAPLog.print("AudioSession.handleRouteChange() changed to \(readableReason)")
 
-          self.routeChangeObserver?(readableReason)
-      }
-      
+        self.routeChangeObserver?(readableReason)
+    }
+
     @objc func handleInterruption(notification: Notification) {
-          guard let userInfo = notification.userInfo,
+        guard let userInfo = notification.userInfo,
               let interruptValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
               let interruptType = AVAudioSession.InterruptionType(rawValue: interruptValue) else { return }
-              let readableInterrupt = AudioSessionInterruptionTypes[interruptType] ?? "unknown"
+        let readableInterrupt = AudioSessionInterruptionTypes[interruptType] ?? "unknown"
 
-          CAPLog.print("AudioSession.handleInterruption() interrupted status to \(readableInterrupt)")
+        CAPLog.print("AudioSession.handleInterruption() interrupted status to \(readableInterrupt)")
 
-          self.interruptionObserver?(readableInterrupt)
-      }
-    
-    
-    
-    // METHODS
-    
-    public func currentOutputs() -> [String?] {
-        let outputs = AVAudioSession.sharedInstance().currentRoute.outputs.map({AudioSessionPorts[$0.portType]});
-    
-        return outputs;
+        self.interruptionObserver?(readableInterrupt)
     }
-    
-    public func overrideOutput(_output:String, _callback:@escaping AudioSessionOverrideCallback) -> Void {
-        if (_output == "unknown") {
+
+    // METHODS
+
+    public func currentOutputs() -> [String?] {
+        let outputs = AVAudioSession.sharedInstance().currentRoute.outputs.map({AudioSessionPorts[$0.portType]})
+
+        return outputs
+    }
+
+    public func overrideOutput(_output: String, _callback:@escaping AudioSessionOverrideCallback) {
+        if _output == "unknown" {
             return _callback(false, "No valid output provided...")
         }
 
         // make it async, cause in latest IOS it started to take ~1 sec and produce UI thread blocking issues
         DispatchQueue.global(qos: .utility).async {
-            let session = AVAudioSession.sharedInstance();
-            
+            let session = AVAudioSession.sharedInstance()
+
             // make sure the AVAudioSession is properly configured
             do {
-                try session.setActive(true);
-                try session.setCategory(AVAudioSession.Category.playAndRecord, options:AVAudioSession.CategoryOptions.duckOthers);
+                try session.setActive(true)
+                try session.setCategory(AVAudioSession.Category.playAndRecord, options: AVAudioSession.CategoryOptions.duckOthers)
             } catch {
                 CAPLog.print("AudioSession.overrideOutput() error setting sessions settings.")
-                _callback(false, "Error setting sessions settings.");
-                return;
+                _callback(false, "Error setting sessions settings.")
+                return
             }
 
             do {
-                if (_output == "speaker") {
-                    try session.overrideOutputAudioPort(.speaker);
+                if _output == "speaker" {
+                    try session.overrideOutputAudioPort(.speaker)
                 } else {
-                    try session.overrideOutputAudioPort(.none);
+                    try session.overrideOutputAudioPort(.none)
                 }
-                
-                _callback(true, "");
-            }
-            catch {
+
+                _callback(true, "")
+            } catch {
                 CAPLog.print("AudioSession.overrideOutput() could not override output port.")
-                _callback(false, "Could not override output port.");
+                _callback(false, "Could not override output port.")
             }
         }
     }
