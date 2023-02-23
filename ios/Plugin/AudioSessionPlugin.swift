@@ -32,7 +32,7 @@ public class AudioSessionPlugin: CAPPlugin {
 
     @objc func overrideOutput(_ call: CAPPluginCall) {
         let output = call.getString("type") ?? "unknown"
-        
+
         implementation.overrideOutput(_output: output) { (success, message, error) -> Void in
             if error == true {
                 call.reject(message ?? "")

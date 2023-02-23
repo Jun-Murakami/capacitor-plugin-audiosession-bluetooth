@@ -43,8 +43,8 @@ public class AudioSession: NSObject {
 
     var routeChangeObserver: AudioSessionRouteChangeObserver?
     var interruptionObserver: AudioSessionInterruptionObserver?
-    
-    var currentOverride:String?;
+
+    var currentOverride: String?
 
     public func load() {
         let nc = NotificationCenter.default
@@ -92,12 +92,12 @@ public class AudioSession: NSObject {
         return outputs
     }
 
-    public func overrideOutput(_output: String, _callback:@escaping AudioSessionOverrideCallback) {
+    public func overrideOutput(_output: String, _callback: @escaping AudioSessionOverrideCallback) {
         if _output == "unknown" {
             return _callback(false, "No valid output provided...", nil)
         }
-        
-        if (self.currentOverride == _output) {
+
+        if self.currentOverride == _output {
             return _callback(true, nil, nil)
         }
 
@@ -114,18 +114,18 @@ public class AudioSession: NSObject {
                 _callback(false, "Error setting sessions settings.", true)
                 return
             }
-            
+
             do {
                 if _output == "speaker" {
                     try session.overrideOutputAudioPort(.speaker)
                 } else {
                     try session.overrideOutputAudioPort(.none)
                 }
-                
+
                 self.currentOverride = _output
-                
+
                 CAPLog.print("currentOverride: " + (self.currentOverride ?? "") + " - " + _output)
-                
+
                 _callback(true, nil, nil)
             } catch {
                 CAPLog.print("AudioSession.overrideOutput() could not override output port.")

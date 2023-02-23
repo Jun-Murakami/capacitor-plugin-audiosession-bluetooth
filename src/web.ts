@@ -4,6 +4,7 @@ import type {
   AudioSessionPlugin,
   AudioSessionPorts,
   OutputOverrideType,
+  OverrideResult,
 } from './definitions';
 
 export class AudioSessionWeb extends WebPlugin implements AudioSessionPlugin {
@@ -16,12 +17,15 @@ export class AudioSessionWeb extends WebPlugin implements AudioSessionPlugin {
     return [];
   }
 
-  async overrideOutput(type: OutputOverrideType): Promise<boolean> {
+  async overrideOutput(type: OutputOverrideType): Promise<OverrideResult> {
     console.log(
       `AudioSessionPlugin.currentOutputs(${type})`,
       'only available on a iOS device.',
     );
 
-    return false;
+    return {
+      success: false,
+      message: '',
+    };
   }
 }

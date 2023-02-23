@@ -44,14 +44,14 @@ currentOutputs() => Promise<AudioSessionPorts[]>
 ### overrideOutput(...)
 
 ```typescript
-overrideOutput(type: OutputOverrideType) => Promise<boolean>
+overrideOutput(type: OutputOverrideType) => Promise<OverrideResult>
 ```
 
 | Param      | Type                                                              |
 | ---------- | ----------------------------------------------------------------- |
 | **`type`** | <code><a href="#outputoverridetype">OutputOverrideType</a></code> |
 
-**Returns:** <code>Promise&lt;boolean&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#overrideresult">OverrideResult</a>&gt;</code>
 
 --------------------
 
@@ -99,6 +99,11 @@ addListener(eventName: 'interruption', listenerFunc: InterruptionListener) => Pr
 
 
 ### Type Aliases
+
+
+#### OverrideResult
+
+<code>{ success: boolean; message: string; }</code>
 
 
 #### OutputOverrideType
