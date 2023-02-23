@@ -37,12 +37,14 @@ var AudioSessionPorts: [AVAudioSession.Port: String] = [
 
 public typealias AudioSessionRouteChangeObserver = (String) -> Void
 public typealias AudioSessionInterruptionObserver = (String) -> Void
-public typealias AudioSessionOverrideCallback = (Bool, String) -> Void
+public typealias AudioSessionOverrideCallback = (Bool, String?, Bool?) -> Void
 
 public class AudioSession: NSObject {
 
     var routeChangeObserver: AudioSessionRouteChangeObserver?
     var interruptionObserver: AudioSessionInterruptionObserver?
+    
+    var currentOverride:String?;
 
     public func load() {
         let nc = NotificationCenter.default
@@ -92,7 +94,11 @@ public class AudioSession: NSObject {
 
     public func overrideOutput(_output: String, _callback:@escaping AudioSessionOverrideCallback) {
         if _output == "unknown" {
-            return _callback(false, "No valid output provided...")
+            return _callback(false, "No valid output provided...", nil)
+        }
+        
+        if (self.currentOverride == _output) {
+            return _callback(true, nil, nil)
         }
 
         // make it async, cause in latest IOS it started to take ~1 sec and produce UI thread blocking issues
@@ -105,21 +111,25 @@ public class AudioSession: NSObject {
                 try session.setCategory(AVAudioSession.Category.playAndRecord, options: AVAudioSession.CategoryOptions.duckOthers)
             } catch {
                 CAPLog.print("AudioSession.overrideOutput() error setting sessions settings.")
-                _callback(false, "Error setting sessions settings.")
+                _callback(false, "Error setting sessions settings.", true)
                 return
             }
-
+            
             do {
                 if _output == "speaker" {
                     try session.overrideOutputAudioPort(.speaker)
                 } else {
                     try session.overrideOutputAudioPort(.none)
                 }
-
-                _callback(true, "")
+                
+                self.currentOverride = _output
+                
+                CAPLog.print("currentOverride: " + (self.currentOverride ?? "") + " - " + _output)
+                
+                _callback(true, nil, nil)
             } catch {
                 CAPLog.print("AudioSession.overrideOutput() could not override output port.")
-                _callback(false, "Could not override output port.")
+                _callback(false, "Could not override output port.", true)
             }
         }
     }

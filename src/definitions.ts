@@ -28,13 +28,18 @@ export enum AudioSessionPorts {
   LINE_OUT = 'line-out',
 }
 
+export type OverrideResult = {
+  success: boolean;
+  message: string;
+};
+
 export type OutputOverrideType = 'default' | 'speaker';
 
 export type RouteChangeListener = (reason: RouteChangeReasons) => void;
 export type InterruptionListener = (type: InterruptionTypes) => void;
 export interface AudioSessionPlugin {
   currentOutputs(): Promise<AudioSessionPorts[]>;
-  overrideOutput(type: OutputOverrideType): Promise<boolean>;
+  overrideOutput(type: OutputOverrideType): Promise<OverrideResult>;
   addListener(
     eventName: 'routeChanged',
     listenerFunc: RouteChangeListener,

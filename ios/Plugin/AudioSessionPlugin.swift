@@ -1,10 +1,6 @@
 import Foundation
 import Capacitor
 
-/**
- * Please read the Capacitor iOS Plugin Development Guide
- * here: https://capacitorjs.com/docs/plugins/ios
- */
 @objc(AudioSessionPlugin)
 public class AudioSessionPlugin: CAPPlugin {
     private let implementation = AudioSession()
@@ -36,12 +32,15 @@ public class AudioSessionPlugin: CAPPlugin {
 
     @objc func overrideOutput(_ call: CAPPluginCall) {
         let output = call.getString("type") ?? "unknown"
-
-        implementation.overrideOutput(_output: output) { (success, message) -> Void in
-            if success {
-                call.resolve()
+        
+        implementation.overrideOutput(_output: output) { (success, message, error) -> Void in
+            if error == true {
+                call.reject(message ?? "")
             } else {
-                call.reject(message)
+                call.resolve([
+                    "success": success,
+                    "message": message ?? ""
+                ])
             }
         }
     }
