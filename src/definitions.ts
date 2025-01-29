@@ -37,6 +37,12 @@ export type OutputOverrideType = 'default' | 'speaker';
 
 export type RouteChangeListener = (reason: RouteChangeReasons) => void;
 export type InterruptionListener = (type: InterruptionTypes) => void;
+
+export interface AudioSessionOptions {
+  autoSwitchBluetooth?: boolean;
+  priorityOrder?: AudioSessionPorts[];
+}
+
 export interface AudioSessionPlugin {
   currentOutputs(): Promise<AudioSessionPorts[]>;
   overrideOutput(type: OutputOverrideType): Promise<OverrideResult>;
@@ -48,4 +54,5 @@ export interface AudioSessionPlugin {
     eventName: 'interruption',
     listenerFunc: InterruptionListener,
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  configure(options: AudioSessionOptions): Promise<void>;
 }

@@ -44,4 +44,10 @@ public class AudioSessionPlugin: CAPPlugin {
             }
         }
     }
+
+    @objc func configure(_ call: CAPPluginCall) {
+        let options = call.options
+        implementation.configure(options: options)
+        call.resolve()
+    }
 }

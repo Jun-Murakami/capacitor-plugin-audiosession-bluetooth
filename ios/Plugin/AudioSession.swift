@@ -46,6 +46,15 @@ public class AudioSession: NSObject {
 
     var currentOverride: String?
 
+    private var autoSwitchBluetooth: Bool = false
+    private var priorityOrder: [AVAudioSession.Port] = [
+        .lineOut,
+        .headphones,
+        .bluetoothA2DP,
+        .bluetoothHFP,
+        .builtInSpeaker
+    ]
+
     public func load() {
         let nc = NotificationCenter.default
 
@@ -69,6 +78,11 @@ public class AudioSession: NSObject {
         let readableReason = AudioSessionRouteChangeReasons[reasonType] ?? "unknown"
 
         CAPLog.print("AudioSession.handleRouteChange() changed to \(readableReason)")
+
+        // 自動切り替えが有効な場合、最適な出力に切り替え
+        if self.autoSwitchBluetooth {
+            self.switchToOptimalOutput()
+        }
 
         self.routeChangeObserver?(readableReason)
     }
@@ -130,6 +144,46 @@ public class AudioSession: NSObject {
             } catch {
                 CAPLog.print("AudioSession.overrideOutput() could not override output port.")
                 _callback(false, "Could not override output port.", true)
+            }
+        }
+    }
+
+    public func configure(options: [String: Any]) {
+        if let autoSwitch = options["autoSwitchBluetooth"] as? Bool {
+            self.autoSwitchBluetooth = autoSwitch
+        }
+        
+        if let priorities = options["priorityOrder"] as? [String] {
+            self.priorityOrder = priorities.compactMap { portString in
+                // AudioSessionPortsの文字列からAVAudioSession.Portに変換
+                return AudioSessionPorts.first { $0.value == portString }?.key
+            }
+        }
+        
+        // 現在の接続状態をチェックして必要なら切り替え
+        if self.autoSwitchBluetooth {
+            self.switchToOptimalOutput()
+        }
+    }
+
+    private func switchToOptimalOutput() {
+        let session = AVAudioSession.sharedInstance()
+        let currentOutputs = session.currentRoute.outputs
+        
+        // 優先順位に従って最適な出力を探す
+        for priority in self.priorityOrder {
+            if let _ = currentOutputs.first(where: { $0.portType == priority }) {
+                // この出力が利用可能な場合、切り替え
+                do {
+                    if priority == .builtInSpeaker {
+                        try session.overrideOutputAudioPort(.speaker)
+                    } else {
+                        try session.overrideOutputAudioPort(.none)
+                    }
+                    break
+                } catch {
+                    CAPLog.print("AudioSession.switchToOptimalOutput() could not override to \(priority)")
+                }
             }
         }
     }
