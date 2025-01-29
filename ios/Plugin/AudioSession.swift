@@ -159,11 +159,34 @@ public class AudioSession: NSObject {
             }
         }
         
-        // 初期接続状態のチェックを追加
         if self.autoSwitchBluetooth {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { // 遅延を追加
-                self.switchToOptimalOutput()
+            // オーディオセッションを明示的にアクティベート
+            let session = AVAudioSession.sharedInstance()
+            do {
+                try session.setCategory(.playAndRecord, options: [.allowBluetooth, .allowBluetoothA2DP])
+                try session.setActive(true, options: .notifyOthersOnDeactivation)
+                
+                // 遅延後に優先デバイスチェック
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    self.forceUpdateAudioRoute()
+                }
+            } catch {
+                CAPLog.print("AudioSession configure error: \(error.localizedDescription)")
             }
+        }
+    }
+
+    private func forceUpdateAudioRoute() {
+        let session = AVAudioSession.sharedInstance()
+        do {
+            // 現在のルートをリセット
+            try session.setActive(false)
+            try session.setActive(true)
+            
+            // 優先デバイスに切り替え
+            self.switchToOptimalOutput()
+        } catch {
+            CAPLog.print("Force update audio route failed: \(error.localizedDescription)")
         }
     }
 
