@@ -164,12 +164,10 @@ public class AudioSession: NSObject {
             do {
                 // ステレオ出力のためのオプションを追加
                 let categoryOptions: AVAudioSession.CategoryOptions = [
-                    .allowBluetooth,
                     .allowBluetoothA2DP,
                     .defaultToSpeaker,
                     .allowAirPlay,
                     .mixWithOthers,
-                    .duckOthers
                 ]
                 
                 try session.setCategory(
@@ -185,6 +183,13 @@ public class AudioSession: NSObject {
                 try session.setPreferredSampleRate(48000)
                 
                 try session.setActive(true, options: .notifyOthersOnDeactivation)
+
+                let currentRoute = AVAudioSession.sharedInstance().currentRoute
+                for output in currentRoute.outputs {
+                    print("Current output: \(output.portType)")
+                    print("Channel count: \(output.channels.count)")
+                    print("Channel descriptions: \(output.channels)")
+                }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.forceUpdateAudioRoute()
