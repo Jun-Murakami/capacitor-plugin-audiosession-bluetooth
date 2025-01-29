@@ -182,6 +182,8 @@ public class AudioSession: NSObject {
                 let preferredIOBufferDuration = 0.005
                 try session.setPreferredIOBufferDuration(preferredIOBufferDuration)
                 try session.setPreferredSampleRate(48000)
+
+                try session.setPreferredOutputNumberOfChannels(2)
                 
                 try session.setActive(true, options: .notifyOthersOnDeactivation)
                 
