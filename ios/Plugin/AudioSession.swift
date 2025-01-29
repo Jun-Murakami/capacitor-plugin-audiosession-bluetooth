@@ -160,13 +160,22 @@ public class AudioSession: NSObject {
         }
         
         if self.autoSwitchBluetooth {
-            // オーディオセッションを明示的にアクティベート
             let session = AVAudioSession.sharedInstance()
             do {
-                try session.setCategory(.playAndRecord, options: [.allowBluetooth, .allowBluetoothA2DP])
+                // A2DPを優先するカテゴリ設定
+                try session.setCategory(
+                    .playAndRecord,
+                    mode: .default,
+                    policy: .longFormAudio,
+                    options: [.allowBluetoothA2DP, .mixWithOthers]
+                )
+                
+                // 低遅延オーディオ設定
+                try session.setPreferredIOBufferDuration(0.005)
+                try session.setPreferredSampleRate(48000)
+                
                 try session.setActive(true, options: .notifyOthersOnDeactivation)
                 
-                // 遅延後に優先デバイスチェック
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.forceUpdateAudioRoute()
                 }
