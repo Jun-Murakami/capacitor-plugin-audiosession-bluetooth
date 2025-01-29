@@ -164,7 +164,6 @@ public class AudioSession: NSObject {
             do {
                 // ステレオ出力のためのオプションを追加
                 let categoryOptions: AVAudioSession.CategoryOptions = [
-                    .allowBluetooth,
                     .allowBluetoothA2DP,
                     .defaultToSpeaker,
                     .allowAirPlay,
@@ -173,8 +172,9 @@ public class AudioSession: NSObject {
                 ]
                 
                 try session.setCategory(
-                    .multiRoute,
-                    mode: .measurement,
+                    .playback,
+                    mode: .default,
+                    RouteSharingPolicy: .longFormAudio,
                     options: categoryOptions
                 )
                 
