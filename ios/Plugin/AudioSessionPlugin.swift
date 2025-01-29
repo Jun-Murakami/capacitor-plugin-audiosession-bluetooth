@@ -46,7 +46,10 @@ public class AudioSessionPlugin: CAPPlugin {
     }
 
     @objc func configure(_ call: CAPPluginCall) {
-        let options = call.options
+        guard let options = call.options as? [String: Any] else {
+            call.reject("Invalid options provided")
+            return
+        }
         implementation.configure(options: options)
         call.resolve()
     }
