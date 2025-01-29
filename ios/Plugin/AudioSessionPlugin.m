@@ -6,4 +6,5 @@
 CAP_PLUGIN(AudioSessionPlugin, "AudioSession",
            CAP_PLUGIN_METHOD(currentOutputs, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(overrideOutput, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(configure, CAPPluginReturnPromise);
 )
