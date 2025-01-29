@@ -162,16 +162,25 @@ public class AudioSession: NSObject {
         if self.autoSwitchBluetooth {
             let session = AVAudioSession.sharedInstance()
             do {
-                // A2DPを優先するカテゴリ設定
+                // ステレオ出力のためのオプションを追加
+                let categoryOptions: AVAudioSession.CategoryOptions = [
+                    .allowBluetooth,
+                    .allowBluetoothA2DP,
+                    .defaultToSpeaker,
+                    .allowAirPlay,
+                    .mixWithOthers,
+                    .duckOthers
+                ]
+                
                 try session.setCategory(
                     .playAndRecord,
                     mode: .default,
-                    policy: .longFormAudio,
-                    options: [.allowBluetoothA2DP, .mixWithOthers]
+                    options: categoryOptions
                 )
                 
-                // 低遅延オーディオ設定
-                try session.setPreferredIOBufferDuration(0.005)
+                // 入出力のフォーマットを設定
+                let preferredIOBufferDuration = 0.005
+                try session.setPreferredIOBufferDuration(preferredIOBufferDuration)
                 try session.setPreferredSampleRate(48000)
                 
                 try session.setActive(true, options: .notifyOthersOnDeactivation)
