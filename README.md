@@ -19,7 +19,7 @@ This plugin is a fork of [studiokloek/capacitor-plugin-audiosession](https://git
 ## Usage Example
 
 ```typescript
-import { AudioSession, AudioSessionPorts } from '@studiokloek/capacitor-plugin-audiosession';
+import { AudioSession, AudioSessionPorts } from 'capacitor-plugin-audiosession-bluetooth';
 
 // Configure on app startup
 await AudioSession.configure({
@@ -60,14 +60,14 @@ For now this plugin works only in Capacitor 4.0+.
 
 <docgen-index>
 
-* [`currentOutputs()`](#currentoutputs)
-* [`overrideOutput(...)`](#overrideoutput)
-* [`addListener('routeChanged', ...)`](#addlistenerroutechanged-)
-* [`addListener('interruption', ...)`](#addlistenerinterruption-)
-* [`configure(...)`](#configure)
-* [Interfaces](#interfaces)
-* [Type Aliases](#type-aliases)
-* [Enums](#enums)
+- [`currentOutputs()`](#currentoutputs)
+- [`overrideOutput(...)`](#overrideoutput)
+- [`addListener('routeChanged', ...)`](#addlistenerroutechanged-)
+- [`addListener('interruption', ...)`](#addlistenerinterruption-)
+- [`configure(...)`](#configure)
+- [Interfaces](#interfaces)
+- [Type Aliases](#type-aliases)
+- [Enums](#enums)
 
 </docgen-index>
 
@@ -82,8 +82,7 @@ currentOutputs() => Promise<AudioSessionPorts[]>
 
 **Returns:** <code>Promise&lt;AudioSessionPorts[]&gt;</code>
 
---------------------
-
+---
 
 ### overrideOutput(...)
 
@@ -97,8 +96,7 @@ overrideOutput(type: OutputOverrideType) => Promise<OverrideResult>
 
 **Returns:** <code>Promise&lt;<a href="#overrideresult">OverrideResult</a>&gt;</code>
 
---------------------
-
+---
 
 ### addListener('routeChanged', ...)
 
@@ -113,8 +111,7 @@ addListener(eventName: 'routeChanged', listenerFunc: RouteChangeListener) => Pro
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
---------------------
-
+---
 
 ### addListener('interruption', ...)
 
@@ -129,8 +126,7 @@ addListener(eventName: 'interruption', listenerFunc: InterruptionListener) => Pr
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
---------------------
-
+---
 
 ### configure(...)
 
@@ -142,18 +138,15 @@ configure(options: AudioSessionOptions) => Promise<void>
 | ------------- | ------------------------------------------------------------------- |
 | **`options`** | <code><a href="#audiosessionoptions">AudioSessionOptions</a></code> |
 
---------------------
-
+---
 
 ### Interfaces
-
 
 #### PluginListenerHandle
 
 | Prop         | Type                                      |
 | ------------ | ----------------------------------------- |
 | **`remove`** | <code>() =&gt; Promise&lt;void&gt;</code> |
-
 
 #### AudioSessionOptions
 
@@ -162,32 +155,32 @@ configure(options: AudioSessionOptions) => Promise<void>
 | **`autoSwitchBluetooth`** | <code>boolean</code>             |
 | **`priorityOrder`**       | <code>AudioSessionPorts[]</code> |
 
-
 ### Type Aliases
-
 
 #### OverrideResult
 
-<code>{ success: boolean; message: string; }</code>
-
+<code>{
+ success: boolean;
+ message: string;
+ }</code>
 
 #### OutputOverrideType
 
 <code>'default' | 'speaker'</code>
 
-
 #### RouteChangeListener
 
-<code>(reason: <a href="#routechangereasons">RouteChangeReasons</a>): void</code>
-
+<code>
+  (reason: <a href="#routechangereasons">RouteChangeReasons</a>): void
+</code>
 
 #### InterruptionListener
 
-<code>(type: <a href="#interruptiontypes">InterruptionTypes</a>): void</code>
-
+<code>
+  (type: <a href="#interruptiontypes">InterruptionTypes</a>): void
+</code>
 
 ### Enums
-
 
 #### AudioSessionPorts
 
@@ -203,7 +196,6 @@ configure(options: AudioSessionOptions) => Promise<void>
 | **`HEADPHONES`**        | <code>'headphones'</code>       |
 | **`LINE_OUT`**          | <code>'line-out'</code>         |
 
-
 #### RouteChangeReasons
 
 | Members                              | Value                                         |
@@ -216,7 +208,6 @@ configure(options: AudioSessionOptions) => Promise<void>
 | **`NO_SUITABLE_ROUTE_FOR_CATEGORY`** | <code>'no-suitable-route-for-category'</code> |
 | **`ROUTE_CONFIGURATION_CHANGE`**     | <code>'route-config-change'</code>            |
 | **`UNKNOWN`**                        | <code>'unknown'</code>                        |
-
 
 #### InterruptionTypes
 
