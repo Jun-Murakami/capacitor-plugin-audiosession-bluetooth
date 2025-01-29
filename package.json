@@ -11,7 +11,7 @@
     "ios/Plugin/",
     "StudiokloekCapacitorPluginAudiosession.podspec"
   ],
-  "author": "Martijn Swart <opensource@studiokloek.nl>",
+  "author": "Jun Murakami",
   "license": "MIT",
   "repository": {
     "type": "git",
