@@ -160,37 +160,13 @@ public class AudioSession: NSObject {
         }
         
         if self.autoSwitchBluetooth {
+            // オーディオセッションを明示的にアクティベート
             let session = AVAudioSession.sharedInstance()
             do {
-                // ステレオ出力のためのオプションを追加
-                let categoryOptions: AVAudioSession.CategoryOptions = [
-                    .allowBluetoothA2DP,
-                    .defaultToSpeaker,
-                    .allowAirPlay,
-                    .mixWithOthers,
-                ]
-                
-                try session.setCategory(
-                    .playAndRecord,
-                    mode: .default,
-                    policy: .longFormAudio,
-                    options: categoryOptions
-                )
-                
-                // 入出力のフォーマットを設定
-                let preferredIOBufferDuration = 0.005
-                try session.setPreferredIOBufferDuration(preferredIOBufferDuration)
-                try session.setPreferredSampleRate(48000)
-                
+                try session.setCategory(.playAndRecord, options: [.allowBluetoothA2DP])
                 try session.setActive(true, options: .notifyOthersOnDeactivation)
-
-                let currentRoute = AVAudioSession.sharedInstance().currentRoute
-                for output in currentRoute.outputs {
-                    print("Current output: \(output.portType)")
-                    print("Channel count: \(output.channels.count)")
-                    print("Channel descriptions: \(output.channels)")
-                }
                 
+                // 遅延後に優先デバイスチェック
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.forceUpdateAudioRoute()
                 }
