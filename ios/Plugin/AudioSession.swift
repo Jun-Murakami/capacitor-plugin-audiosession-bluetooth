@@ -174,14 +174,19 @@ public class AudioSession: NSObject {
         // 現在の出力が優先順位に合致しているかチェック
         let currentPort = currentOutputs.first?.portType
         if let current = currentPort, priorityOrder.contains(current) {
-            return // 既に最適なデバイスが選択されている
+            return
         }
         
         // 優先順位に従って切り替え
         for priority in self.priorityOrder {
             if let _ = currentOutputs.first(where: { $0.portType == priority }) {
                 do {
-                    try session.setPreferredOutput(priority)
+                    // スピーカーのみ特別扱い
+                    if priority == .builtInSpeaker {
+                        try session.overrideOutputAudioPort(.speaker)
+                    } else {
+                        try session.overrideOutputAudioPort(.none)
+                    }
                     try session.setActive(true)
                     break
                 } catch {
