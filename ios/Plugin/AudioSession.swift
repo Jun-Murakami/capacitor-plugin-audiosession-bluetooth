@@ -173,8 +173,8 @@ public class AudioSession: NSObject {
                 ]
                 
                 try session.setCategory(
-                    .playAndRecord,
-                    mode: .default,
+                    .multiRoute,
+                    mode: .measurement,
                     options: categoryOptions
                 )
                 
