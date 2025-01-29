@@ -174,7 +174,7 @@ public class AudioSession: NSObject {
                 try session.setCategory(
                     .playback,
                     mode: .default,
-                    RouteSharingPolicy: .longFormAudio,
+                    policy: .longFormAudio,
                     options: categoryOptions
                 )
                 
