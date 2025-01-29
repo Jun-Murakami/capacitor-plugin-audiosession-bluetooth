@@ -155,14 +155,15 @@ public class AudioSession: NSObject {
         
         if let priorities = options["priorityOrder"] as? [String] {
             self.priorityOrder = priorities.compactMap { portString in
-                // AudioSessionPortsの文字列からAVAudioSession.Portに変換
                 return AudioSessionPorts.first { $0.value == portString }?.key
             }
         }
         
-        // 現在の接続状態をチェックして必要なら切り替え
+        // 初期接続状態のチェックを追加
         if self.autoSwitchBluetooth {
-            self.switchToOptimalOutput()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { // 遅延を追加
+                self.switchToOptimalOutput()
+            }
         }
     }
 
@@ -170,19 +171,21 @@ public class AudioSession: NSObject {
         let session = AVAudioSession.sharedInstance()
         let currentOutputs = session.currentRoute.outputs
         
-        // 優先順位に従って最適な出力を探す
+        // 現在の出力が優先順位に合致しているかチェック
+        let currentPort = currentOutputs.first?.portType
+        if let current = currentPort, priorityOrder.contains(current) {
+            return // 既に最適なデバイスが選択されている
+        }
+        
+        // 優先順位に従って切り替え
         for priority in self.priorityOrder {
             if let _ = currentOutputs.first(where: { $0.portType == priority }) {
-                // この出力が利用可能な場合、切り替え
                 do {
-                    if priority == .builtInSpeaker {
-                        try session.overrideOutputAudioPort(.speaker)
-                    } else {
-                        try session.overrideOutputAudioPort(.none)
-                    }
+                    try session.setPreferredOutput(priority)
+                    try session.setActive(true)
                     break
                 } catch {
-                    CAPLog.print("AudioSession.switchToOptimalOutput() could not override to \(priority)")
+                    CAPLog.print("Failed to switch to \(priority): \(error.localizedDescription)")
                 }
             }
         }
