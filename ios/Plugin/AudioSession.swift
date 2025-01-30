@@ -122,7 +122,7 @@ public class AudioSession: NSObject {
             // make sure the AVAudioSession is properly configured
             do {
                 try session.setActive(true)
-                try session.setCategory(.playAndRecord, options: [.defaultToSpeaker,.allowBluetooth, .allowBluetoothA2DP,.allowAirPlay,.mixWithOthers])
+                try session.setCategory(.multiRoute, options: [.defaultToSpeaker,.allowBluetoothA2DP,.allowAirPlay,.mixWithOthers])
             } catch {
                 CAPLog.print("AudioSession.overrideOutput() error setting sessions settings.")
                 _callback(false, "Error setting sessions settings.", true)
@@ -163,7 +163,7 @@ public class AudioSession: NSObject {
             // オーディオセッションを明示的にアクティベート
             let session = AVAudioSession.sharedInstance()
             do {
-                try session.setCategory(.playAndRecord, options: [.defaultToSpeaker,.allowBluetooth, .allowBluetoothA2DP,.allowAirPlay,.mixWithOthers])
+                try session.setCategory(.multiRoute, options: [.defaultToSpeaker,.allowBluetoothA2DP,.allowAirPlay,.mixWithOthers])
                 try session.setActive(true, options: .notifyOthersOnDeactivation)
                 
                 // 遅延後に優先デバイスチェック
@@ -200,49 +200,16 @@ public class AudioSession: NSObject {
             return
         }
         
-        // まずA2DPで試行
-        do {
-            try session.setCategory(
-                .playAndRecord,
-                options: [.allowBluetoothA2DP, .allowAirPlay, .mixWithOthers]
-            )
-            try session.setActive(true)
-            
-            // A2DPデバイスを探す
-            if let a2dpDevice = currentOutputs.first(where: { $0.portType == .bluetoothA2DP }) {
-                CAPLog.print("A2DP device found, using high-quality audio")
-                return // A2DPデバイスが見つかった場合は終了
-            }
-        } catch {
-            CAPLog.print("Failed to set A2DP mode: \(error.localizedDescription)")
-        }
-        
-        // A2DPデバイスが見つからない場合、他のオプションを試行
+        // 優先順位に従って切り替え
         for priority in self.priorityOrder {
             if let _ = currentOutputs.first(where: { $0.portType == priority }) {
                 do {
-                    var options: AVAudioSession.CategoryOptions = [.mixWithOthers]
-                    
-                    // デバイスタイプに応じてオプションを設定
-                    switch priority {
-                    case .bluetoothA2DP:
-                        options.insert(.allowBluetoothA2DP)
-                    case .bluetoothHFP:
-                        options.insert(.allowBluetooth)
-                    case .builtInSpeaker:
-                        options.insert(.defaultToSpeaker)
-                    default:
-                        break
-                    }
-                    
-                    try session.setCategory(.playAndRecord, options: options)
-                    
+                    // スピーカーのみ特別扱い
                     if priority == .builtInSpeaker {
                         try session.overrideOutputAudioPort(.speaker)
                     } else {
                         try session.overrideOutputAudioPort(.none)
                     }
-                    
                     try session.setActive(true)
                     break
                 } catch {
