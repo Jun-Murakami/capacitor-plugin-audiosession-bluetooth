@@ -190,6 +190,30 @@ public class AudioSession: NSObject {
         }
     }
 
+    private func getAudioCategoryOptions(for portType: AVAudioSession.Port?) -> AVAudioSession.CategoryOptions {
+        var options: AVAudioSession.CategoryOptions = [
+            .defaultToSpeaker,
+            .allowAirPlay,
+            .mixWithOthers
+        ]
+        
+        // Bluetoothデバイスの場合、適切なオプションを追加
+        if let port = portType {
+            switch port {
+            case .bluetoothHFP:
+                options.insert(.allowBluetooth)
+            case .bluetoothA2DP:
+                options.insert(.allowBluetoothA2DP)
+            default:
+                // その他のデバイスタイプの場合は両方のオプションを設定
+                options.insert(.allowBluetooth)
+                options.insert(.allowBluetoothA2DP)
+            }
+        }
+        
+        return options
+    }
+
     private func switchToOptimalOutput() {
         let session = AVAudioSession.sharedInstance()
         let currentOutputs = session.currentRoute.outputs
@@ -197,6 +221,14 @@ public class AudioSession: NSObject {
         // 現在の出力が優先順位に合致しているかチェック
         let currentPort = currentOutputs.first?.portType
         if let current = currentPort, priorityOrder.contains(current) {
+            // 現在の出力が優先順位内の場合、適切なオプションを設定
+            do {
+                let options = getAudioCategoryOptions(for: current)
+                try session.setCategory(.playAndRecord, options: options)
+                try session.setActive(true)
+            } catch {
+                CAPLog.print("Failed to configure audio session: \(error.localizedDescription)")
+            }
             return
         }
         
@@ -204,7 +236,9 @@ public class AudioSession: NSObject {
         for priority in self.priorityOrder {
             if let _ = currentOutputs.first(where: { $0.portType == priority }) {
                 do {
-                    // スピーカーのみ特別扱い
+                    let options = getAudioCategoryOptions(for: priority)
+                    try session.setCategory(.playAndRecord, options: options)
+                    
                     if priority == .builtInSpeaker {
                         try session.overrideOutputAudioPort(.speaker)
                     } else {
