@@ -122,7 +122,7 @@ public class AudioSession: NSObject {
             // make sure the AVAudioSession is properly configured
             do {
                 try session.setActive(true)
-                try session.setCategory(.playAndRecord, options: [.defaultToSpeaker,.allowBluetooth, .allowBluetoothA2DP,.allowAirPlay,.mixWithOthers])
+                try session.setCategory(.playAndRecord, options: [.defaultToSpeaker,.allowBluetoothA2DP,.allowAirPlay,.mixWithOthers])
             } catch {
                 CAPLog.print("AudioSession.overrideOutput() error setting sessions settings.")
                 _callback(false, "Error setting sessions settings.", true)
@@ -168,7 +168,7 @@ public class AudioSession: NSObject {
                     .joined(separator: ", ")
                 CAPLog.print("現在の出力デバイス: [\(currentOutputs)]")
 
-                try session.setCategory(.playAndRecord, options: [.defaultToSpeaker,.allowBluetooth, .allowBluetoothA2DP,.allowAirPlay,.mixWithOthers])
+                try session.setCategory(.playAndRecord, options: [.defaultToSpeaker,.allowBluetoothA2DP,.allowAirPlay,.mixWithOthers])
                 try session.setActive(true, options: .notifyOthersOnDeactivation)
                 
                 // 遅延後に優先デバイスチェック
