@@ -160,9 +160,14 @@ public class AudioSession: NSObject {
         }
         
         if self.autoSwitchBluetooth {
-            // オーディオセッションを明示的にアクティベート
             let session = AVAudioSession.sharedInstance()
             do {
+                // 現在の出力デバイスをログ出力
+                let currentOutputs = session.currentRoute.outputs
+                    .compactMap { AudioSessionPorts[$0.portType] }
+                    .joined(separator: ", ")
+                CAPLog.print("現在の出力デバイス: [\(currentOutputs)]")
+
                 try session.setCategory(.playAndRecord, options: [.defaultToSpeaker,.allowBluetooth, .allowBluetoothA2DP,.allowAirPlay,.mixWithOthers])
                 try session.setActive(true, options: .notifyOthersOnDeactivation)
                 
@@ -179,12 +184,23 @@ public class AudioSession: NSObject {
     private func forceUpdateAudioRoute() {
         let session = AVAudioSession.sharedInstance()
         do {
-            // 現在のルートをリセット
+            // 現在の出力デバイスをログ出力
+            let currentOutputs = session.currentRoute.outputs
+                .compactMap { AudioSessionPorts[$0.portType] }
+                .joined(separator: ", ")
+            CAPLog.print("更新前の出力デバイス: [\(currentOutputs)]")
+            
             try session.setActive(false)
             try session.setActive(true)
             
-            // 優先デバイスに切り替え
             self.switchToOptimalOutput()
+            
+            // 更新後の出力デバイスをログ出力
+            let newOutputs = session.currentRoute.outputs
+                .compactMap { AudioSessionPorts[$0.portType] }
+                .joined(separator: ", ")
+            CAPLog.print("更新後の出力デバイス: [\(newOutputs)]")
+            
         } catch {
             CAPLog.print("Force update audio route failed: \(error.localizedDescription)")
         }
